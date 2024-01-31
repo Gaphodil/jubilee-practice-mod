@@ -1,0 +1,72 @@
+scr_setup_gvars
++window_set_cursor(cr_none)
+-global.DEVMODE = 0
++global.DEVMODE = 1
+-    global.steam_api = 1
++    global.steam_api = 0
+
+scr_get_inputs
++key_f2 = keyboard_check_pressed(vk_f2)
++key_add = keyboard_check_pressed(vk_pageup)
++key_sub = keyboard_check_pressed(vk_pagedown)
++key_ctrl = keyboard_check(vk_control)
+
+scr_player_step_normal
++if key_f2
++{
++    global.respawn_x = x
++    global.respawn_y = (y + 32)
++}
++if (key_add || key_sub)
++{
++    gs = game_get_speed(gamespeed_fps)
++    if key_sub
++    {
++        if key_ctrl
++            game_set_speed((gs - 1), gamespeed_fps)
++        else
++            game_set_speed(floor((gs / 2)), gamespeed_fps)
++    }
++    else if key_add
++    {
++        if key_ctrl
++            game_set_speed(60, gamespeed_fps)
++        else
++            game_set_speed((gs * 2), gamespeed_fps)
++    }
++}
+
+scr_player_draw_hud
+-if (global.show_fps == 1)
+-{
+-    draw_set_halign(fa_left)
+-    var fpx = 6
+-    var fpy = 24
+-    draw_text_shadow(fpx, fpy, ("FPS (Real) " + string(fps_real)), 16777215)
+-    draw_text_shadow(fpx, (fpy + 12), ("FPS (Game) " + string(fps)), 16777215)
+-}
++var t_accel = accel
++if (global.amDAX == 1 && (grounded == 0 || CUTSCENE_STOP == 1))
++    t_accel = 0.25
++var t_decel = decel
++if (global.amDAX == 1 && CUTSCENE_STOP == 1)
++    t_decel = 0.33
++if (wall_jump_ext > 0 && grounded == 0)
++    t_decel = (decel / 5)
++if (global.show_fps == 1)
++{
++    draw_set_halign(fa_left)
++    var fpx = 6
++    var fpy = 45
++    var dy = 12
++    draw_text_shadow(fpx, fpy, ("FPS (Real) " + string(fps_real)), 16777215)
++    draw_text_shadow(fpx, (fpy + dy), ("FPS (Game) " + string(fps)), 16777215)
++    draw_text_shadow(fpx, (fpy + (2 * dy)), ("Max FPS (Gamespeed) " + string(game_get_speed(gamespeed_fps))), 16777215)
++    draw_text_shadow(fpx, (fpy + (3 * dy)), ("X " + string(x)), 16777215)
++    draw_text_shadow(fpx, (fpy + (4 * dy)), ("Y " + string(y)), 16777215)
++    draw_text_shadow(fpx, (fpy + (5 * dy)), ((("HSpeed " + string(hsp)) + " ") + string(add_hsp)), 16777215)
++    draw_text_shadow(fpx, (fpy + (6 * dy)), ((("VSpeed " + string(vsp)) + " ") + string(wind_vsp)), 16777215)
++    draw_text_shadow(fpx, (fpy + (7 * dy)), ("Accel " + string(t_accel)), 16777215)
++    draw_text_shadow(fpx, (fpy + (8 * dy)), ("Decel " + string(t_decel)), 16777215)
++}
+
